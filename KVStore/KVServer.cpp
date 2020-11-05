@@ -1,4 +1,5 @@
 #include "KVServer.h"
+#include<string.h>
 
 #define LISTENING_PORT "1234"
 #define CLIENTS_PER_THREAD 10
@@ -112,17 +113,36 @@ void *processRequest(void *fd){
 	char request_buffer[1000];
 	char response_buffer[50];
 	while(1){
-	  int len = read(client_fd, request_buffer, 999);
+	  int len = read(client_fd, request_buffer, 513);
 	  request_buffer[len] = '\0';
 
 	  cout<<"Read "<<len<<" chars\n";
 	  cout<<"===\n";
 	  cout<<request_buffer;
 
-	  sprintf(response_buffer,"Server response to client");
+	  sprintf(response_buffer,"Server reading message from client %d",client_fd);
+	  
+
+
+	  /********REQUEST MESSAGE HANDLING CODE**********/
+	  char operation = request_buffer[0];
+	  string key = string(request_buffer+1,request_buffer+256);
+	  key.append(1,'\0');
+	  string val = string(request_buffer+257,request_buffer+513);
+	  val.append(1,'\0');
+
+
+	  cout << "READ OP" << operation;
+	  cout << "READ KEY :: " << key << "::" << key.length();
+	  cout << "READ VALUE :: " << val << "::" << val.length();
+	  /********REQUEST MESSAGE HANDLING CODE**********/
+
+
+
 	 
 	  write(client_fd, response_buffer, strlen(response_buffer));
 	  if(request_buffer[0]=='X') break;
 	}
 	return NULL;
 }
+
